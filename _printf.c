@@ -2,93 +2,136 @@
 #include <stdarg.h>
 #include <unistd.h>
 
-#define BUFFER_SIZE 20
-
 /**
- * write_char - Helper func to write a char
- * @c: Char to write
- * Return: Num of chars written
- */
-int write_char(int c) {
-    return write(1, &c, 1);
-}
-
-/**
- * write_str - Helper func to write a str with precision
- * @str: Str to write
- * @precision: Max chars to write
- * Return: Num of chars written
+ * _printf - Custom printf function
+ * @format: Format string
+ * Return: Number of characters printed (excluding null byte)
  */
 
-int write_str(char *str, int precision) {
-    int count = 0;
-    while (*str && count < precision)
-        write(1, str++, 1), count++;
-    return count;
-}
-
-/**
- * write_int - Helper func to write an int
- * @n: Int to write
- * Return: Number of chars written
- */
-
-int write_int(int n) {
-    char buffer[BUFFER_SIZE];
-    int i = 0;
-
-    if (n < 0) write_char('-'), n = -n;
-    if (n == 0) return write_char('0');
-
-    while (n != 0) buffer[i++] = '0' + n % 10, n /= 10;
-
-    while (--i >= 0) write(1, &buffer[i], 1);
-    return i;
-}
-
-/**
- * _printf - Custom printf func
- * @format: Format str
- * Return: Number of chars printed (excl null byte)
- */
-
-int _printf(const char *format, ...) {
+int _printf(const char *format, ...)
+{
     va_list args;
-    int count = 0, int_arg;
-    char *str_arg;
+    int count = 0;
+    const char *ptr;
 
     va_start(args, format);
 
-    for (; *format; ++format) {
-        if (*format != '%') {
-            write_char(*format);
+    for (ptr = format; *ptr != '\0'; ptr++)
+    {
+        if (*ptr != '%')
+        {
+            write(1, ptr, 1);  // write character to stdout
             count++;
-        } else {
-            format++;
-            switch (*format) {
+        }
+        else
+        {
+            ptr++; // Move past '%'
+
+            switch (*ptr)
+            {
             case 'c':
                 count += write_char(va_arg(args, int));
                 break;
             case 's':
-                str_arg = va_arg(args, char *);
-                count += write_str(str_arg ? str_arg : "(null)");
+                count += write_str(va_arg(args, char *));
                 break;
             case '%':
-                count += write_char('%');
+                write(1, "%", 1);
+                count++;
                 break;
-            case 'd': case 'i':
-                int_arg = va_arg(args, int);
-                count += write_int(int_arg);
+            case 'd':
+            case 'i':
+                count += write_int(va_arg(args, int));
                 break;
             default:
-                write_char('%');
-                write_char(*format);
+                write(1, "%", 1);
+                write(1, &(*ptr), 1);
                 count += 2;
             }
         }
     }
 
     va_end(args);
+
     return count;
+}
+
+/**
+ * write_char - Helper function to write a character
+ * @c: Character to write
+ * Return: Number of characters written
+ */
+
+int write_char(int c)
+{
+    write(1, &c, 1);
+    return 1;
+}
+
+/**
+ * write_str - Helper function to write a string
+ * @str: String to write
+ * Return: Number of characters written
+ */
+
+int write_str(char *str)
+{
+    if (str == NULL)
+        str = "(null)";
+
+    write(1, str, _strlen(str));
+    return _strlen(str);
+}
+
+/**
+ * write_int - Helper function to write an integer
+ * @n: Integer to write
+ * Return: Number of characters written
+ */
+
+int write_int(int n)
+{
+    char buffer[20];
+    int i = 0;
+
+    if (n < 0)
+    {
+        write_char('-');
+        n = -n;
+    }
+
+    if (n == 0)
+    {
+        write_char('0');
+        return 1;
+    }
+
+    while (n != 0)
+    {
+        buffer[i++] = '0' + n % 10;
+        n /= 10;
+    }
+
+    while (--i >= 0)
+        write(1, &buffer[i], 1);
+
+    return i;
+}
+
+/**
+ * _strlen - Helper function to calculate string length
+ * @str: Input string
+ * Return: Length of the string
+ */
+
+int _strlen(char *str)
+{
+    int len = 0;
+    while (*str)
+    {
+        len++;
+        str++;
+    }
+    return len;
 }
 
