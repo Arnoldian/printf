@@ -1,34 +1,21 @@
-#ifndef _MAIN_H_
-#define _MAIN_H_
+#ifndef MAIN_H
+#define MAIN_H
 
 #include <stdarg.h>
-#include <stddef.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+int _printf(const char *format, ...);
+int handle_specifier(const char **ptr, va_list args);
+int print_int(int n);
+int print_binary(unsigned int n);
+int print_unsigned(unsigned int n);
+int print_octal(unsigned int n);
+int print_hex(unsigned int n, int uppercase);
+int print_custom_string(char *str);
+int print_pointer(void *ptr);
+int print_reversed(char *str);
+int print_rot13(char *str);
+int _putchar(char c);
+int _puts(char *str);
 
-void _putchar(char character);
-
-#define printf printf_
-int printf_(const char *format, ...);
-
-#define sprintf sprintf_
-int sprintf_(char *buffer, const char *format, ...);
-
-#define snprintf  snprintf_
-#define vsnprintf vsnprintf_
-int snprintf_(char *buffer, size_t count, const char *format, ...);
-int vsnprintf_(char *buffer, size_t count, const char *format, va_list va);
-
-#define vprintf vprintf_
-int vprintf_(const char *format, va_list va);
-
-int fctprintf(void (*out)(char character, void *arg), void *arg, const char *format, ...);
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif  // _MAIN_H_
+#endif /* MAIN_H */
 
